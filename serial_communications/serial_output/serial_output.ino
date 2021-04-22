@@ -19,5 +19,5 @@ void loop()
     Serial.print("The number is ");
     Serial.println(counter); // print the number, followed by a new line
     delay(1000);             // delay one second between numbers
-    counter++;               // increment to counter
+    counter++;               // increment counter
 }
