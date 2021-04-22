@@ -1,6 +1,9 @@
 # VS Code
 .vscode/
 
+# Python virtual env
+venv/
+
 # Prerequisites
 *.d
 
