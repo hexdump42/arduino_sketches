@@ -20,8 +20,10 @@ python serial_receive_text_message.py --serialport COM7
 import serial
 import argparse
 
-msg_start_marker = "M"
-msg_field_delimiter = ";"
+MSG_START_MARKER = "M"
+MSG_FIELD_DELIMITER = ";"
+MSG_NUMBER_OF_FIELDS = 3
+INVALID_MSG = "Invalid Message!"
 
 
 def setup_serial(serial_port_name, baudrate, timeout=1, wait=True):
@@ -46,10 +48,10 @@ def setup_serial(serial_port_name, baudrate, timeout=1, wait=True):
 
 def recv_msg():
     msg = serial_port.readline().decode("utf-8")
-    if len(msg) > 0 and msg[0] == msg_start_marker:
+    if len(msg) > 0 and msg[0] == MSG_START_MARKER:
         return msg[:-1]  # strip \n at end of the message
     else:
-        return "Invalid message!"
+        return INVALID_MSG
 
 
 def wait_until_arduino_ready():
@@ -68,11 +70,22 @@ def wait_until_arduino_ready():
         msg = serial_port.readline().decode("utf-8")
 
 
-def main(serial_port_name, baudrate,):
+def main(
+    serial_port_name,
+    baudrate,
+):
     setup_serial(serial_port_name, baudrate, 1, True)
     while True:
         arduino_msg = recv_msg()
-        print(arduino_msg)
+        if arduino_msg != INVALID_MSG:
+            print(arduino_msg)
+            # break into individual message fields
+            msg_fields = arduino_msg.split(MSG_FIELD_DELIMITER)
+            if len(msg_fields) == MSG_NUMBER_OF_FIELDS:
+                msg_type, msg_id, msg_field1 = msg_fields
+                print(f"Message Type: {msg_type}")
+                print(f"Message Id: {msg_id}")
+                print(f"Message Field 1: {msg_field1}")
 
 
 if __name__ == "__main__":
